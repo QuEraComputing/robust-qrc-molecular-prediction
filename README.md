@@ -33,41 +33,41 @@ Download the Merck Molecular Activity Challenge dataset (2.1GB) from [Kaggle](ht
 
 ### 1. Data Preparation
 
-Run `qrc-dataprep.py` to create subsamples for 100, 200, and 800 records, as well as 25 subsamples of 100 samples for cross-validation.
+Run `qrc-dataprep.py` to create subsamples for 100, 200, and 800 records, as well as 25 subsamples of 100 samples for cross-validation.  The script implements the data preparation pipeline and classical regression models used in the paper. It incorporates data cleaning, outlier detection, feature scaling, dimensionality reduction (PCA), and feature selection using SHAP values. It generates multiple stratified subsamples and cross-validation splits, enabling robust evaluation of machine learning models on both original and QRC-embedded features. The workflow supports reproducible experiments by saving processed datasets and feature selections, facilitating systematic comparison of classical and quantum-inspired approaches in large-scale molecular regression tasks.
 
 ### 2. Generate Embeddings
 
 #### QRC Embeddings
 
-Run `qrc_regression_merck.jl` to create QRC embeddings and QRC one-body embeddings from the preprocessed data.
+Run `qrc_regression_merck.jl` to create QRC embeddings and QRC one-body embeddings from the preprocessed data. The script encodes classical molecular descriptors into quantum states using quantum reservoir detuning layers and simulates their evolution under a Rydberg Hamiltonian, extracting quantum observables as high-dimensional embeddings. It processes subsamples for a given data set a a given number of records (100,200,800) and different experimental configurations.  The QRC embedding outputs are used in `qrc_runalgos_alltypes.py`.  
 
 #### CRC Embeddings
 
-Run `crc_randforest_embeddingonly.jl` to generate Classical Reservoir Computing embeddings.
+Run `crc_randforest_embeddingonly.jl` to generate Classical Reservoir Computing (CRC) embeddings. Classical reservoir embeddings are generated from vector spin limit of the Rydberg Hamiltonian. The script processes molecular activity datasets by normalizing and projecting features, simulating their evolution through the integration of the spin dynamical system, and extracts time-dependent observables as embeddings. These embeddings are saved for downstream machine learning tasks to systematically compare CRC-based representations with quantum and classical baselines. The code is designed to process subsamples for a particular Merck molecular activity dataset, a number of data subsamples, a specified number of records (100,200,800), and various reservoir configurations. The CRC embedding outputs are used in `qrc_runalgos_alltypes_crc.py`.  
 
-#### Noise Simulation Embeddings
+#### Shot Noise Simulation Embeddings
 
-Run `qrc_regression_wavefunction_milan.jl` to create embeddings using simulated noise with wavefunction sampling technique.
+Run `qrc_regression_wavefunction_milan.jl` to create embeddings using simulated shot noise through the wavefunction sampling. The script encodes classical molecular descriptors into quantum states via quantum reservoir detuning layers, simulates their evolution under a Rydberg Hamiltonian, and extracts measurement observables from a finite number of wavefunction samples as high-dimensional quantum embeddings, equivalently to `qrc_regression_merck.jl`. The user can specify the number of samples, with 0 representing exact sampling. The data collection for the paper is run repeatedly for each subsample in order to estimate shot noise related uncertainty.
 
 ### 3. Model Training and Evaluation
 
 #### Standard Models
 
-Run `qrc_runalgos_alltypes.py` to train and evaluate models on classical data, QRC embeddings, and QRC one-body embeddings.
+Run `qrc_runalgos_alltypes.py` to train and evaluate models on classical data, QRC embeddings, and QRC one-body embeddings. This script code runs the modeling pipeline and creates regression model diagnostics statistics such as mean-squared error, accuracy, AUC, F1-Score, recall, and precision for classical data, QRC two-body embeddings, and QRC one-body embeddings. It automates data postprocessing and model training using a range of scikit-learn regressors and neural networks. The script evaluates models on both raw molecular features and quantum reservoir computing (QRC) embeddings, systematically comparing performance metrics across multiple data splits and embedding types. Results are aggregated for analysis, enabling at scale evaluation of QRC and classical approaches.
 
 #### CRC Models
 
-Run `qrc_runalgos_alltypes_crc.py` to evaluate models specifically for CRC embeddings.
+Run `qrc_runalgos_alltypes_crc.py` to evaluate models specifically for CRC embeddings. This Python code runs the model pipeline for CRC embeddings and creates regression model diagnostics statistics equivalent to `qrc_runalgos_alltypes.py`.
 
 #### Noise Simulation Models
 
-Run `qrc_runalgos_alltypes_noise.py` to evaluate models for wavefunction sampling embeddings with various noise levels.
+Run `qrc_runalgos_alltypes_noise.py` to evaluate models for wavefunction sampling embeddings with various noise levels. This Python code runs the model pipeline for the shot noise simulated QRC embeddings and creates regression model diagnostics statistics equivalent to `qrc_runalgos_alltypes.py`.
 
 ### 4. Visualization and Analysis
 
 #### UMAP Analysis
 
-Run `merck_activity_QRC_UMAP_recs200-sub4-act4_wbintargs_v3.ipynb` to generate UMAP visualizations and statistical analysis.
+Run `merck_activity_QRC_UMAP_recs200-sub4-act4_wbintargs_v3.ipynb` to generate UMAP visualizations and statistical analysis. The notebook loads the QRC and classical embeddings created in the previous script, including QRC, classical reservoir, and  classical reservoir computing (CRC) embedding. The program uses UMAP to performs topological data analysis and visualises low dimensional UMAP representations.
 
 #### Figure Generation
 
